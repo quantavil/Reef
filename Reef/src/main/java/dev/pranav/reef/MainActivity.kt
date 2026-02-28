@@ -21,8 +21,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Waves
+import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Insights
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.BarChart
 import androidx.compose.material.icons.rounded.SelfImprovement
@@ -437,7 +437,7 @@ class MainActivity: ComponentActivity() {
                                             actions = {
                                                 IconButton(onClick = { navController.navigate(Screen.FocusStats) }) {
                                                     Icon(
-                                                        Icons.Outlined.Insights,
+                                                        Icons.Outlined.BarChart,
                                                         contentDescription = "Focus Stats"
                                                     )
                                                 }
