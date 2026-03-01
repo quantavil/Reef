@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -41,33 +44,65 @@ sealed interface AllowedAppsState {
 @Composable
 fun WhitelistScreen(
     uiState: AllowedAppsState,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
     onToggle: (WhitelistedApp) -> Unit
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        when (uiState) {
-            is AllowedAppsState.Loading -> {
-                ContainedLoadingIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
+    Column(modifier = Modifier.fillMaxSize()) {
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = onSearchQueryChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            placeholder = { Text("Search apps...") },
+            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+            trailingIcon = {
+                if (searchQuery.isNotEmpty()) {
+                    IconButton(onClick = { onSearchQueryChange("") }) {
+                        Icon(Icons.Default.Close, contentDescription = "Clear search")
+                    }
+                }
+            },
+            shape = RoundedCornerShape(28.dp),
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors()
+        )
 
-            is AllowedAppsState.Success -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp)
-                ) {
-                    itemsIndexed(
-                        items = uiState.apps,
-                        key = { _, app -> app.packageName }
-                    ) { index, app ->
-                        WhitelistItem(
-                            app = app,
-                            index = index,
-                            listSize = uiState.apps.size,
-                            onToggle = { onToggle(app) }
+        Box(modifier = Modifier.fillMaxSize()) {
+            when (uiState) {
+                is AllowedAppsState.Loading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+
+                is AllowedAppsState.Success -> {
+                    if (uiState.apps.isEmpty()) {
+                        Text(
+                            text = "No apps found",
+                            modifier = Modifier.align(Alignment.Center),
+                            style = MaterialTheme.typography.bodyLarge
                         )
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(
+                                bottom = 16.dp,
+                                start = 16.dp,
+                                end = 16.dp
+                            )
+                        ) {
+                            itemsIndexed(
+                                items = uiState.apps,
+                                key = { _, app -> app.packageName }
+                            ) { index, app ->
+                                WhitelistItem(
+                                    app = app,
+                                    index = index,
+                                    listSize = uiState.apps.size,
+                                    onToggle = { onToggle(app) }
+                                )
+                            }
+                        }
                     }
                 }
             }

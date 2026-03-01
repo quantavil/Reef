@@ -20,6 +20,11 @@ class WhitelistViewModel(
 ): ViewModel() {
 
     private val _uiState = mutableStateOf<AllowedAppsState>(AllowedAppsState.Loading)
+    private var allApps = listOf<WhitelistedApp>()
+
+    private val _searchQuery = mutableStateOf("")
+    val searchQuery: State<String> = _searchQuery
+
     val uiState: State<AllowedAppsState> = _uiState
 
     init {
@@ -45,28 +50,36 @@ class WhitelistViewModel(
                     .sortedBy { it.label }
                     .toList()
             }
-            _uiState.value = AllowedAppsState.Success(apps)
+            allApps = apps
+            updateFilteredList()
         }
+    }
+
+    fun onSearchQueryChange(query: String) {
+        _searchQuery.value = query
+        updateFilteredList()
+    }
+
+    private fun updateFilteredList() {
+        val query = _searchQuery.value
+        val filtered = if (query.isEmpty()) {
+            allApps
+        } else {
+            allApps.filter {
+                it.label.contains(query, ignoreCase = true) ||
+                        it.packageName.contains(query, ignoreCase = true)
+            }
+        }
+        _uiState.value = AllowedAppsState.Success(filtered)
     }
 
     fun toggleWhitelist(app: WhitelistedApp) {
-        if (app.isWhitelisted) {
-            Whitelist.unwhitelist(app.packageName)
-        } else {
-            Whitelist.whitelist(app.packageName)
-        }
+        if (app.isWhitelisted) Whitelist.unwhitelist(app.packageName)
+        else Whitelist.whitelist(app.packageName)
 
-        val currentState = _uiState.value
-        if (currentState is AllowedAppsState.Success) {
-            val updatedList = currentState.apps.map {
-                if (it.packageName == app.packageName) {
-                    it.copy(isWhitelisted = !it.isWhitelisted)
-                } else {
-                    it
-                }
-            }
-            _uiState.value = AllowedAppsState.Success(updatedList)
+        allApps = allApps.map {
+            if (it.packageName == app.packageName) it.copy(isWhitelisted = !it.isWhitelisted) else it
         }
+        updateFilteredList()
     }
 }
-

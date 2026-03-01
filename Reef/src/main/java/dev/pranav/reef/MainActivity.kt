@@ -294,6 +294,13 @@ class MainActivity: ComponentActivity() {
                         rememberTopAppBarState()
                     )
 
+                    LaunchedEffect(navController) {
+                        navController.currentBackStackEntryFlow.collect { backStackEntry ->
+                            scrollBehavior.state.heightOffset = 0f
+                            scrollBehavior.state.contentOffset = 0f
+                        }
+                    }
+
                     Scaffold(
                         modifier = Modifier
                             .fillMaxSize()
@@ -390,54 +397,45 @@ class MainActivity: ComponentActivity() {
                                         )
                             }
                         ) {
-
-
                             composable<Screen.Home> {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .background(MaterialTheme.colorScheme.surface)
-                                ) {
-                                    Column(modifier = Modifier.fillMaxSize()) {
-                                        TopAppBar(
-                                            title = {
-                                                Row(
-                                                    verticalAlignment = Alignment.CenterVertically,
-                                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                Column(modifier = Modifier.fillMaxSize()) {
+                                    MediumTopAppBar(
+                                        title = {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                            ) {
+                                                Surface(
+                                                    modifier = Modifier.size(44.dp),
+                                                    shape = CircleShape,
+                                                    color = MaterialTheme.colorScheme.primaryContainer
                                                 ) {
-                                                    Surface(
-                                                        modifier = Modifier.size(44.dp),
-                                                        shape = CircleShape,
-                                                        color = MaterialTheme.colorScheme.primaryContainer
-                                                    ) {
-                                                        Box(
-                                                            contentAlignment = Alignment.Center,
-                                                            modifier = Modifier.fillMaxSize()
-                                                        ) {
-                                                            Icon(
-                                                                Icons.Filled.Waves,
-                                                                contentDescription = null,
-                                                                modifier = Modifier.size(26.dp),
-                                                                tint = MaterialTheme.colorScheme.onPrimaryContainer
-                                                            )
-                                                        }
-                                                    }
-                                                    Text(
-                                                        stringResource(R.string.app_name),
-                                                        style = MaterialTheme.typography.headlineLarge.copy(
-                                                            fontWeight = FontWeight.Medium
+                                                    Box(contentAlignment = Alignment.Center) {
+                                                        Icon(
+                                                            Icons.Filled.Waves,
+                                                            contentDescription = null,
+                                                            modifier = Modifier.size(26.dp),
+                                                            tint = MaterialTheme.colorScheme.onPrimaryContainer
                                                         )
-                                                    )
+                                                    }
                                                 }
-                                            },
-                                            colors = TopAppBarDefaults.topAppBarColors(
-                                                containerColor = Color.Transparent
-                                            ),
-                                            scrollBehavior = scrollBehavior
+                                                Text(
+                                                    stringResource(R.string.app_name),
+                                                    style = MaterialTheme.typography.headlineLarge.copy(
+                                                        fontWeight = FontWeight.Medium
+                                                    )
+                                                )
+                                            }
+                                        },
+                                        scrollBehavior = scrollBehavior,
+                                        colors = TopAppBarDefaults.topAppBarColors(
+                                            containerColor = MaterialTheme.colorScheme.surface,
+                                            scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
                                         )
-                                        Column(modifier = Modifier.padding(top = innerPadding.calculateTopPadding())) {
-                                            homeScreen()
-                                        }
+                                    )
+
+                                    Box(modifier = Modifier.weight(1f)) {
+                                        homeScreen()
                                     }
                                 }
                             }
@@ -453,10 +451,7 @@ class MainActivity: ComponentActivity() {
                                         LargeTopAppBar(
                                             title = {
                                                 Text(
-                                                    stringResource(R.string.focus_mode_title),
-                                                    style = MaterialTheme.typography.headlineLarge.copy(
-                                                        fontWeight = FontWeight.Medium
-                                                    )
+                                                    stringResource(R.string.focus_mode_title)
                                                 )
                                             },
                                             actions = {
@@ -487,10 +482,7 @@ class MainActivity: ComponentActivity() {
                                         LargeTopAppBar(
                                             title = {
                                                 Text(
-                                                    stringResource(R.string.app_usage),
-                                                    style = MaterialTheme.typography.headlineLarge.copy(
-                                                        fontWeight = FontWeight.Medium
-                                                    )
+                                                    stringResource(R.string.app_usage)
                                                 )
                                             },
                                             colors = TopAppBarDefaults.topAppBarColors(
@@ -565,10 +557,7 @@ class MainActivity: ComponentActivity() {
                                         LargeTopAppBar(
                                             title = {
                                                 Text(
-                                                    stringResource(R.string.routines),
-                                                    style = MaterialTheme.typography.headlineLarge.copy(
-                                                        fontWeight = FontWeight.Medium
-                                                    )
+                                                    stringResource(R.string.routines)
                                                 )
                                             },
                                             colors = TopAppBarDefaults.topAppBarColors(
@@ -611,10 +600,7 @@ class MainActivity: ComponentActivity() {
                                         LargeTopAppBar(
                                             title = {
                                                 Text(
-                                                    stringResource(R.string.whitelist_apps_title),
-                                                    style = MaterialTheme.typography.headlineLarge.copy(
-                                                        fontWeight = FontWeight.Medium
-                                                    )
+                                                    stringResource(R.string.whitelist_apps_title)
                                                 )
                                             },
                                             colors = TopAppBarDefaults.topAppBarColors(
@@ -641,10 +627,7 @@ class MainActivity: ComponentActivity() {
                                         LargeTopAppBar(
                                             title = {
                                                 Text(
-                                                    stringResource(R.string.settings),
-                                                    style = MaterialTheme.typography.headlineLarge.copy(
-                                                        fontWeight = FontWeight.Medium
-                                                    )
+                                                    stringResource(R.string.settings)
                                                 )
                                             },
                                             colors = TopAppBarDefaults.topAppBarColors(

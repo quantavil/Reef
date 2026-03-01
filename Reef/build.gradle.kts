@@ -14,8 +14,8 @@ android {
         applicationId = "dev.pranav.reef"
         minSdk = 26
         targetSdk = 36
-        versionCode = 304
-        versionName = "3.0.4"
+        versionCode = 400
+        versionName = "4.0.0"
     }
 
     viewBinding.enable = true
@@ -29,6 +29,10 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+
+            // Disables redundant VCS info
+            vcsInfo.include = false
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
@@ -43,16 +47,25 @@ android {
         jvmTarget.set(JvmTarget.JVM_17)
     }
 
+    bundle {
+        integrityConfigDir.set(null as Directory?)
+    }
+
     dependenciesInfo {
         // Disables dependency metadata when building APKs (for IzzyOnDroid/F-Droid)
-        includeInApk = false
+        //includeInApk = false
         // Disables dependency metadata when building Android App Bundles (for Google Play)
         includeInBundle = false
     }
     buildToolsVersion = "36.1.0"
-    ndkVersion = "29.0.14033849 rc4"
     compileSdkMinor = 1
 
+    packaging.resources {
+        excludes += "/META-INF/com/android/build/gradle/**"
+        excludes += "/META-INF/*.version"
+        excludes += "/META-INF/androidx/**"
+        excludes += "/kotlin/**"
+    }
 }
 
 dependencies {

@@ -62,6 +62,8 @@ fun WhitelistScreenWrapper(
 
     WhitelistScreen(
         uiState = viewModel.uiState.value,
-        onToggle = viewModel::toggleWhitelist
+        onToggle = viewModel::toggleWhitelist,
+        searchQuery = viewModel.searchQuery.value,
+        onSearchQueryChange = viewModel::onSearchQueryChange
     )
 }

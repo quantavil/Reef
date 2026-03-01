@@ -77,19 +77,6 @@ On first launch, a guided setup walks you through granting the required permissi
 
 ---
 
-## Permissions Explained
-
-| Permission                     | Why It's Needed                                                  |
-|--------------------------------|------------------------------------------------------------------|
-| Accessibility Service          | To detect when blocked apps are opened and redirect you home     |
-| Usage Access                   | To read app usage statistics and enforce time limits             |
-| Post Notifications             | To send focus reminders, break alerts, and daily summaries       |
-| Do Not Disturb Access          | To automatically enable DND during focus sessions                |
-| Exact Alarm                    | To schedule routines at precise times                            |
-| Battery Optimization Exception | To keep the timer and blocker running reliably in the background |
-
----
-
 ## Help Translate
 
 Reef is available in multiple languages. Help make it accessible to more people by contributing
@@ -102,16 +89,18 @@ translations on [Weblate](https://hosted.weblate.org/engage/reef/).
 If Reef has been helpful to you, please consider supporting its development with a small donation.
 Every contribution matters.
 
-**Bitcoin (BTC):** `bc1qec5ccz85qn90a6zxnqnes0rx274cv6vw7j5x4g`
+**Open Collective:** https://opencollective.com/invokevirtual
+
+**Bitcoin (BTC):** `bc1q3eesyfn7lhql4c2khv56cyvw2374zkhe7r97hz`
 
 **Ethereum (ETH):** `0xD80A8D6E0fa433A8bDFC2D3F325159Db70605816`
+
+**Monero (XMR):**
+`848dAWBVk8GMaoRHg6HUP5CbkpY9pJra1KNQAo9yJ6vbJLFsjFD8ZHkGpi6FhVY7rsD4U9iR7brk64eknsC3bS7tV9JRU4f`
 
 **Solana (SOL):** `7FxTAJLmhXFp6wxVbUTpf8jDmzEX1CKVMdE8oLPNQvyb`
 
 **Litecoin (LTC):** `ltc1q3pqyj5ge5rdmqr00w03x4tlhm6rhcc6wrfyx8k`
-
-**Monero (XMR):**
-`44w9JtiXxwifyH5CU6Ln1BNViyWNz4z7pEZ4nqbCvUejiK3yEjdyAv6bAofXX2Eh6Fbe3DXJ6eCX6YWKh9SF15fyKBjeJ5H`
 
 **UPI (India):** `pranavpurwar@fam`
 
@@ -121,8 +110,25 @@ Every contribution matters.
 
 ## License
 
-Reef is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute this
+Reef is licensed under the [MIT License](https://opensource.org/licenses/MIT). You are free to use,
+modify, and distribute this
 software.
+
+### 1. Mandatory Attribution
+
+Any derivative work, fork, or redistribution of this software **must** include a prominent link back
+to the original repository.
+This link must be visible to the end-user (e.g., in the "About" or "Settings" screen of the app).
+
+### 2. Trademark & Branding
+
+The name **"Reef"** and the **official app icon** are trademarks of Pranav Purwar.
+
+* You are **not** permitted to use the name "Reef" or the original icon for any derivative works or
+  forks.
+* Any redistribution must use a distinct name, a different package ID (e.g., changing
+  `com.pranav.reef` to something else), and a unique launcher icon.
+* This is to prevent confusion among users and to maintain the integrity of the original project.
 
 ```text
 MIT License
