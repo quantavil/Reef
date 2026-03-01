@@ -158,20 +158,20 @@ fun AppIntroScreen() {
             }
         ),
 
-        // 6. Exact Alarm Permission (Android 12+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !alarmManager.canScheduleExactAlarms()) {
+        // 6. Do Not Disturb Permission (Android 13+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !context.hasDndPermission()) {
             IntroPage(
-                title = stringResource(R.string.exact_alarm_permission),
-                description = stringResource(R.string.exact_alarm_permission_description),
-                icon = Icons.Rounded.AccessAlarm,
+                title = stringResource(R.string.do_not_disturb_permission),
+                description = stringResource(R.string.do_not_disturb_permission_description),
+                icon = Icons.Rounded.DoNotDisturbOn,
                 backgroundColor = Color(0xFF8968D5),
                 contentColor = Color.White,
                 onNext = {
-                    if (!alarmManager.canScheduleExactAlarms()) {
-                        val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
-                            data = "package:${context.packageName}".toUri()
-                        }
+                    if (!context.hasDndPermission()) {
+                        val intent =
+                            Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
                         context.startActivity(intent)
+
                         false
                     } else true
                 }

@@ -15,7 +15,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
 import androidx.core.content.edit
+import androidx.core.graphics.toColorInt
 import androidx.core.net.toUri
+import com.google.android.material.color.MaterialColors
 import dev.pranav.reef.MainActivity
 import dev.pranav.reef.R
 import dev.pranav.reef.data.PhaseType
@@ -50,6 +52,7 @@ class FocusModeService: Service() {
     private var notificationBuilder: NotificationCompat.Builder? = null
     private var previousInterruptionFilter: Int? = null
     private var initialDuration: Long = 0
+    private var notificationStyle: NotificationCompat.ProgressStyle? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -105,6 +108,7 @@ class FocusModeService: Service() {
         val isPomodoroMode = prefs.getBoolean("pomodoro_mode", false)
 
         initialDuration = focusTimeMillis
+        notificationStyle = null
 
         if (isPomodoroMode) {
             val config = PomodoroConfig(
@@ -354,6 +358,7 @@ class FocusModeService: Service() {
         }
 
         initialDuration = nextPhase.duration
+        notificationStyle = null
         FocusStats.startPhase(nextPhaseType, nextPhase.duration)
 
         if (nextPhase.phase == PomodoroPhase.FOCUS) {
@@ -444,18 +449,81 @@ class FocusModeService: Service() {
         }
     }
 
+    private fun updateProgressSegments() {
+        val state = TimerStateManager.state.value
+        val config = TimerStateManager.getPomodoroConfig()
+
+        notificationStyle = NotificationCompat.ProgressStyle().also { style ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA && state.isPomodoroMode && config != null) {
+                val themedContext = android.view.ContextThemeWrapper(this, R.style.Theme_Reef)
+                val primaryColor = MaterialColors.getColor(
+                    themedContext, android.R.attr.colorPrimary, "#3861d1".toColorInt()
+                )
+                val tertiaryColor = MaterialColors.getColor(
+                    themedContext, com.google.android.material.R.attr.colorTertiary,
+                    "#e05583".toColorInt()
+                )
+                for (i in 0 until state.totalCycles * 2) {
+                    when {
+                        i % 2 == 0 -> style.addProgressSegment(
+                            NotificationCompat.ProgressStyle.Segment(config.focusDuration.toInt())
+                                .setColor(primaryColor)
+                        )
+
+                        i != state.totalCycles * 2 - 1 -> style.addProgressSegment(
+                            NotificationCompat.ProgressStyle.Segment(config.shortBreakDuration.toInt())
+                                .setColor(tertiaryColor)
+                        )
+
+                        else -> style.addProgressSegment(
+                            NotificationCompat.ProgressStyle.Segment(config.longBreakDuration.toInt())
+                                .setColor(tertiaryColor)
+                        )
+                    }
+                }
+            } else {
+                style.addProgressSegment(
+                    NotificationCompat.ProgressStyle.Segment(
+                        initialDuration.toInt().coerceAtLeast(1)
+                    )
+                )
+            }
+        }
+    }
+
+    private fun calculateCumulativeProgress(timeLeft: Long): Int {
+        val state = TimerStateManager.state.value
+        val config = TimerStateManager.getPomodoroConfig()
+        val elapsed = (initialDuration - timeLeft).coerceAtLeast(0L)
+
+        if (!state.isPomodoroMode || config == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) {
+            return elapsed.toInt()
+        }
+
+        val n = state.currentCycle
+        val previousTime: Long = when (state.pomodoroPhase) {
+            PomodoroPhase.FOCUS ->
+                (n - 1).toLong() * (config.focusDuration + config.shortBreakDuration)
+
+            PomodoroPhase.SHORT_BREAK ->
+                (n - 1).toLong() * config.focusDuration + (n - 2).coerceAtLeast(0)
+                    .toLong() * config.shortBreakDuration
+
+            PomodoroPhase.LONG_BREAK ->
+                state.totalCycles.toLong() * config.focusDuration + (state.totalCycles - 1).toLong() * config.shortBreakDuration
+
+            else -> 0L
+        }
+
+        return (previousTime + elapsed).toInt()
+    }
+
     private fun createNotification(
         title: String,
         text: String,
         showPauseButton: Boolean,
         timeLeft: Long = 0
     ): Notification {
-
-        val progressPercent = if (initialDuration > 0 && timeLeft > 0) {
-            ((initialDuration - timeLeft).toFloat() / initialDuration.toFloat() * 100f).toInt()
-                .coerceIn(0, 100)
-        } else 0
-
         val isStrictMode = TimerStateManager.state.value.isStrictMode
 
         if (notificationBuilder == null) {
@@ -471,7 +539,7 @@ class FocusModeService: Service() {
 
             notificationBuilder = NotificationCompat.Builder(this, FOCUS_MODE_CHANNEL_ID)
                 .setContentIntent(pendingIntent)
-                .setSmallIcon(R.drawable.ic_launcher_monochrome)
+                .setSmallIcon(R.drawable.hourglass)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
@@ -480,12 +548,15 @@ class FocusModeService: Service() {
                 .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
         }
 
+        if (notificationStyle == null) updateProgressSegments()
+
         val chipText = "${TimeUnit.MILLISECONDS.toMinutes(timeLeft)}m"
 
         return notificationBuilder!!.apply {
             setContentTitle(title)
             setContentText(text)
-            setProgress(100, progressPercent, false)
+            setStyle(notificationStyle!!.setProgress(calculateCumulativeProgress(timeLeft)))
+            setWhen(System.currentTimeMillis() + timeLeft)
             setShortCriticalText(chipText)
 
             clearActions()

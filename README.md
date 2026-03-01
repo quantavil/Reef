@@ -47,41 +47,15 @@ proven productivity techniques like Pomodoro—all wrapped in a beautiful Materi
 
 ## Features
 
-### Focus Mode
-
-- **Simple Timer**: Set a custom focus duration and block all distractions during your work session
-- **Pomodoro Technique**: Built-in Pomodoro timer with configurable focus, short break, and long
-  break durations
-- **Strict Mode**: Optionally lock yourself in—no pausing or canceling until the timer ends
-- **Auto-Start Options**: Automatically start breaks and next Pomodoro cycles
-- **Do Not Disturb**: Automatically enable DND during focus sessions
-
-### App Blocking & Limits
-
-- **Smart App Blocking**: Accessibility-based blocking sends you home when opening blocked apps
-- **Daily Time Limits**: Set per-app daily usage limits with minute-level granularity
-- **Weekly Usage Charts**: Visualize your app usage patterns with beautiful Vico charts
-- **Whitelist System**: Always allow essential apps like phone, messages, and settings
-
-### Routines
-
-- **Scheduled Blocking**: Create routines that automatically activate at specific times
-- **Weekly Schedules**: Set different app limits for different days of the week
-- **Manual Routines**: One-tap activation for routines when you need them
-- **Per-App Limits in Routines**: Each routine can have its own set of app time limits
-
-### Usage Statistics
-
-- **Detailed Analytics**: See exactly where your screen time goes with daily/weekly breakdowns
-- **Usage History**: Track your usage patterns over time
-- **Daily Summaries**: Get optional daily screen time summary notifications
-
-### Notifications & Alerts
-
-- **Focus Reminders**: Get reminded when you reach for distracting apps during focus
-- **Break Alerts**: Know when your break is over and it's time to get back to work
-- **Limit Warnings**: Receive alerts when you're close to your daily app limits
-- **Customizable Sounds**: Pick your own notification sounds
+- Focus timer with Simple and Pomodoro modes
+- Flexible and Strict modes
+- Automatic Do Not Disturb during focus sessions
+- Per-app daily time limits with warning notifications
+- App blocker
+- Routines — schedule app limits by time and day
+- App usage statistics with interactive charts
+- Focus session history with detailed breakdowns
+- Customisable Pomodoro durations, sounds, and vibration
 
 ---
 
@@ -96,28 +70,23 @@ beautiful experience while helping you build healthier digital habits.
 
 ## Getting Started
 
-1. Download Reef from [GitHub Releases](https://github.com/PranavPurwar/Reef/releases)
-   or [IzzyOnDroid](https://apt.izzysoft.de/packages/dev.pranav.reef)
-2. Grant the necessary permissions:
-    - **Usage Access**: Required to track app usage statistics
-    - **Accessibility Service**: Required to block apps
-    - **Notifications**: For focus reminders and alerts
-3. Select apps you want to block or limit
-4. Set up your focus routines and time limits
-5. Start taking control of your screen time!
+Download from [GitHub Releases](https://github.com/PranavPurwar/Reef/releases)
+or [IzzyOnDroid](https://apt.izzysoft.de/packages/dev.pranav.reef).
+
+On first launch, a guided setup walks you through granting the required permissions.
 
 ---
 
 ## Permissions Explained
 
-| Permission              | Why It's Needed                                              |
-|-------------------------|--------------------------------------------------------------|
-| Usage Access            | To read app usage statistics and enforce time limits         |
-| Accessibility Service   | To detect when blocked apps are opened and redirect you home |
-| Post Notifications      | To send focus reminders, break alerts, and daily summaries   |
-| Display Over Other Apps | For overlay UI when blocking apps                            |
-| Do Not Disturb Access   | To automatically enable DND during focus sessions            |
-| Exact Alarm             | To schedule routines at precise times                        |
+| Permission                     | Why It's Needed                                                  |
+|--------------------------------|------------------------------------------------------------------|
+| Accessibility Service          | To detect when blocked apps are opened and redirect you home     |
+| Usage Access                   | To read app usage statistics and enforce time limits             |
+| Post Notifications             | To send focus reminders, break alerts, and daily summaries       |
+| Do Not Disturb Access          | To automatically enable DND during focus sessions                |
+| Exact Alarm                    | To schedule routines at precise times                            |
+| Battery Optimization Exception | To keep the timer and blocker running reliably in the background |
 
 ---
 
@@ -158,7 +127,7 @@ software.
 ```text
 MIT License
 
-Copyright (c) 2023-2025 Pranav Purwar
+Copyright (c) 2023-2026 Pranav Purwar
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

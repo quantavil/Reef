@@ -33,8 +33,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import androidx.core.net.toUri
@@ -288,8 +290,14 @@ class MainActivity: ComponentActivity() {
                         }
                     }
 
+                    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
+                        rememberTopAppBarState()
+                    )
+
                     Scaffold(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .nestedScroll(scrollBehavior.nestedScrollConnection),
                         containerColor = MaterialTheme.colorScheme.surface,
                         bottomBar = {
                             AnimatedVisibility(
@@ -337,11 +345,22 @@ class MainActivity: ComponentActivity() {
                                 )
                             }
                         }
-                    ) { paddingValues ->
+                    ) { innerPadding ->
                         NavHost(
                             navController = navController,
                             startDestination = Screen.Home,
-                            modifier = Modifier.padding(paddingValues),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(
+                                    PaddingValues(
+                                        innerPadding.calculateStartPadding(
+                                            LayoutDirection.Ltr
+                                        ),
+                                        0.dp,
+                                        innerPadding.calculateEndPadding(LayoutDirection.Ltr),
+                                        innerPadding.calculateBottomPadding()
+                                    )
+                                ),
                             enterTransition = {
                                 fadeIn(animationSpec = tween(250)) +
                                         slideInHorizontally(
@@ -371,6 +390,8 @@ class MainActivity: ComponentActivity() {
                                         )
                             }
                         ) {
+
+
                             composable<Screen.Home> {
                                 Box(
                                     modifier = Modifier
@@ -411,21 +432,25 @@ class MainActivity: ComponentActivity() {
                                             },
                                             colors = TopAppBarDefaults.topAppBarColors(
                                                 containerColor = Color.Transparent
-                                            )
+                                            ),
+                                            scrollBehavior = scrollBehavior
                                         )
-                                        homeScreen()
+                                        Column(modifier = Modifier.padding(top = innerPadding.calculateTopPadding())) {
+                                            homeScreen()
+                                        }
                                     }
                                 }
                             }
 
                             composable<Screen.Timer> {
+
                                 Box(
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .background(MaterialTheme.colorScheme.surface)
                                 ) {
                                     Column(modifier = Modifier.fillMaxSize()) {
-                                        TopAppBar(
+                                        LargeTopAppBar(
                                             title = {
                                                 Text(
                                                     stringResource(R.string.focus_mode_title),
@@ -445,7 +470,7 @@ class MainActivity: ComponentActivity() {
                                             colors = TopAppBarDefaults.topAppBarColors(
                                                 containerColor = Color.Transparent
                                             ),
-                                            modifier = Modifier.statusBarsPadding()
+                                            scrollBehavior = scrollBehavior
                                         )
                                         timerScreen()
                                     }
@@ -459,7 +484,7 @@ class MainActivity: ComponentActivity() {
                                         .background(MaterialTheme.colorScheme.surface)
                                 ) {
                                     Column(modifier = Modifier.fillMaxSize()) {
-                                        MediumTopAppBar(
+                                        LargeTopAppBar(
                                             title = {
                                                 Text(
                                                     stringResource(R.string.app_usage),
@@ -470,7 +495,8 @@ class MainActivity: ComponentActivity() {
                                             },
                                             colors = TopAppBarDefaults.topAppBarColors(
                                                 containerColor = Color.Transparent
-                                            )
+                                            ),
+                                            scrollBehavior = scrollBehavior
                                         )
                                         usageScreen()
                                     }
@@ -536,7 +562,7 @@ class MainActivity: ComponentActivity() {
                                         .background(MaterialTheme.colorScheme.surface)
                                 ) {
                                     Column(modifier = Modifier.fillMaxSize()) {
-                                        MediumTopAppBar(
+                                        LargeTopAppBar(
                                             title = {
                                                 Text(
                                                     stringResource(R.string.routines),
@@ -547,7 +573,8 @@ class MainActivity: ComponentActivity() {
                                             },
                                             colors = TopAppBarDefaults.topAppBarColors(
                                                 containerColor = Color.Transparent
-                                            )
+                                            ),
+                                            scrollBehavior = scrollBehavior
                                         )
                                         RoutinesScreen(
                                             onCreateRoutine = {
@@ -581,7 +608,7 @@ class MainActivity: ComponentActivity() {
                                         .background(MaterialTheme.colorScheme.surface)
                                 ) {
                                     Column(modifier = Modifier.fillMaxSize()) {
-                                        MediumTopAppBar(
+                                        LargeTopAppBar(
                                             title = {
                                                 Text(
                                                     stringResource(R.string.whitelist_apps_title),
@@ -592,7 +619,8 @@ class MainActivity: ComponentActivity() {
                                             },
                                             colors = TopAppBarDefaults.topAppBarColors(
                                                 containerColor = Color.Transparent
-                                            )
+                                            ),
+                                            scrollBehavior = scrollBehavior
                                         )
                                         WhitelistScreenWrapper(
                                             launcherApps = launcherApps,
@@ -610,7 +638,7 @@ class MainActivity: ComponentActivity() {
                                         .background(MaterialTheme.colorScheme.surface)
                                 ) {
                                     Column(modifier = Modifier.fillMaxSize()) {
-                                        MediumTopAppBar(
+                                        LargeTopAppBar(
                                             title = {
                                                 Text(
                                                     stringResource(R.string.settings),
@@ -621,7 +649,8 @@ class MainActivity: ComponentActivity() {
                                             },
                                             colors = TopAppBarDefaults.topAppBarColors(
                                                 containerColor = Color.Transparent
-                                            )
+                                            ),
+                                            scrollBehavior = scrollBehavior
                                         )
                                         settingsScreen()
                                     }

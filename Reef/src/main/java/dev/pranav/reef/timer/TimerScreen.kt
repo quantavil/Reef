@@ -17,7 +17,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -103,42 +102,23 @@ fun TimerScreen(
     onCancelTimer: () -> Unit,
     onRestartTimer: () -> Unit,
 ) {
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.surface,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        stringResource(R.string.focus_mode_title),
-                        style = MaterialTheme.typography.headlineLarge
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                )
-            )
-        }
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentAlignment = Alignment.Center
-        ) {
-            TimerContent(
-                isTimerRunning = isTimerRunning,
-                isPaused = isPaused,
-                currentTimeLeft = currentTimeLeft,
-                currentTimerState = currentTimerState,
-                isStrictMode = isStrictMode,
-                onStartTimer = onStartTimer,
-                onPauseTimer = onPauseTimer,
-                onResumeTimer = onResumeTimer,
-                onCancelTimer = onCancelTimer,
-                onRestartTimer = onRestartTimer
-            )
-        }
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        TimerContent(
+            isTimerRunning = isTimerRunning,
+            isPaused = isPaused,
+            currentTimeLeft = currentTimeLeft,
+            currentTimerState = currentTimerState,
+            isStrictMode = isStrictMode,
+            onStartTimer = onStartTimer,
+            onPauseTimer = onPauseTimer,
+            onResumeTimer = onResumeTimer,
+            onCancelTimer = onCancelTimer,
+            onRestartTimer = onRestartTimer
+        )
     }
 }
 
@@ -218,7 +198,7 @@ fun SimpleFocusSetup(onStart: (TimerConfig) -> Unit) {
             .verticalScroll(rememberScrollState())
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
         Spacer(Modifier.height(16.dp))
 
@@ -330,7 +310,7 @@ fun SimpleFocusSetup(onStart: (TimerConfig) -> Unit) {
             }
         }
 
-        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(32.dp))
 
         Row(
             modifier = Modifier
@@ -423,6 +403,8 @@ fun SimpleFocusSetup(onStart: (TimerConfig) -> Unit) {
                 style = MaterialTheme.typography.titleLarge
             )
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -446,13 +428,14 @@ fun PomodoroFocusSetup(onStart: (TimerConfig) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(24.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.height(16.dp))
 
         Column(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
             Row(
@@ -477,6 +460,8 @@ fun PomodoroFocusSetup(onStart: (TimerConfig) -> Unit) {
                 )
             }
 
+            Spacer(modifier = Modifier.height(24.dp))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -499,6 +484,8 @@ fun PomodoroFocusSetup(onStart: (TimerConfig) -> Unit) {
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(32.dp))
 
         Row(
             modifier = Modifier
@@ -539,7 +526,7 @@ fun PomodoroFocusSetup(onStart: (TimerConfig) -> Unit) {
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = {
@@ -649,7 +636,9 @@ fun RunningTimerView(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 80.dp),
         ) {
             if (isPomodoroMode) {
                 Row(

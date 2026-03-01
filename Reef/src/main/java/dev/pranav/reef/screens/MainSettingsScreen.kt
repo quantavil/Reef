@@ -138,11 +138,6 @@ fun MainSettingsContent(
         }
 
         item {
-            Spacer(modifier = Modifier.height(16.dp))
-            DonateButton()
-        }
-
-        item {
             HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp))
         }
 
