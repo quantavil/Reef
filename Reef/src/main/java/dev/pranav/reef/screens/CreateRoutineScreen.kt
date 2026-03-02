@@ -70,6 +70,7 @@ fun CreateRoutineScreen(
     var showAppSelector by remember { mutableStateOf(false) }
     var showGroupCreator by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var editingLimit by remember { mutableStateOf<Routine.AppLimit?>(null) }
 
     LaunchedEffect(routineId) {
         routineId?.let {
@@ -319,6 +320,7 @@ fun CreateRoutineScreen(
                             onRemove = {
                                 appLimits = appLimits.filter { it.packageName != limit.packageName }
                             },
+                            onEdit = { editingLimit = limit },
                             context = context
                         )
                     }
@@ -464,6 +466,32 @@ fun CreateRoutineScreen(
         )
     }
 
+    editingLimit?.let { limit ->
+        var editAppName by remember(limit.packageName) { mutableStateOf(limit.packageName) }
+        LaunchedEffect(limit.packageName) {
+            withContext(Dispatchers.IO) {
+                try {
+                    val pm = context.packageManager
+                    editAppName =
+                        pm.getApplicationLabel(pm.getApplicationInfo(limit.packageName, 0))
+                            .toString()
+                } catch (_: Exception) {
+                }
+            }
+        }
+        LimitPickerDialog(
+            appName = editAppName,
+            initialMinutes = limit.limitMinutes,
+            onConfirm = { newMinutes ->
+                appLimits = appLimits.map {
+                    if (it.packageName == limit.packageName) it.copy(limitMinutes = newMinutes) else it
+                }
+                editingLimit = null
+            },
+            onDismiss = { editingLimit = null }
+        )
+    }
+
     if (showGroupCreator) {
         CreateGroupDialog(
             onGroupCreated = { group ->
@@ -511,6 +539,7 @@ fun CreateRoutineScreen(
 private fun AppLimitItem(
     appLimit: Routine.AppLimit,
     onRemove: () -> Unit,
+    onEdit: () -> Unit,
     context: android.content.Context
 ) {
     var appName by remember { mutableStateOf(appLimit.packageName) }
@@ -529,6 +558,7 @@ private fun AppLimitItem(
     }
 
     OutlinedCard(
+        onClick = onEdit,
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp)
     ) {
@@ -559,7 +589,8 @@ private fun AppLimitItem(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = formatLimitTime(appLimit.limitMinutes, context),
+                    text = if (appLimit.limitMinutes == 0) stringResource(R.string.block_entirely)
+                    else formatLimitTime(appLimit.limitMinutes, context),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -846,23 +877,62 @@ private fun GroupConfigStep(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
+
+            Text(
+                text = formatLimitTime(sharedLimitMinutes),
+                style = MaterialTheme.typography.displaySmall,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                FilledTonalButton(
+                    onClick = {
+                        if (sharedLimitMinutes >= 15) onSharedLimitChange(sharedLimitMinutes - 15) else if (sharedLimitMinutes > 0) onSharedLimitChange(
+                            0
+                        )
+                    },
+                    enabled = sharedLimitMinutes > 0,
+                    shape = RoundedCornerShape(12.dp)
+                ) { Text("−15m") }
+
+                FilledTonalButton(
+                    onClick = {
+                        if (sharedLimitMinutes >= 5) onSharedLimitChange(sharedLimitMinutes - 5) else if (sharedLimitMinutes > 0) onSharedLimitChange(
+                            0
+                        )
+                    },
+                    enabled = sharedLimitMinutes > 0,
+                    shape = RoundedCornerShape(12.dp)
+                ) { Text("−5m") }
+
+                FilledTonalButton(
+                    onClick = { onSharedLimitChange(sharedLimitMinutes + 5) },
+                    shape = RoundedCornerShape(12.dp)
+                ) { Text("+5m") }
+
+                FilledTonalButton(
+                    onClick = { onSharedLimitChange(sharedLimitMinutes + 15) },
+                    shape = RoundedCornerShape(12.dp)
+                ) { Text("+15m") }
+            }
+
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                listOf(
-                    pluralStringResource(R.plurals.minutes_label, 15, 15) to 15,
-                    pluralStringResource(R.plurals.minutes_label, 30, 30) to 30,
-                    pluralStringResource(R.plurals.hours_label, 1, 1) to 60,
-                    pluralStringResource(R.plurals.hours_label, 2, 2) to 120,
-                    pluralStringResource(R.plurals.hours_label, 3, 3) to 180
-                ).forEach { (label, minutes) ->
+                listOf(5, 10, 15, 20, 30, 45, 60, 90, 120).forEach { preset ->
                     FilterChip(
-                        selected = sharedLimitMinutes == minutes,
-                        onClick = { onSharedLimitChange(minutes) },
-                        label = { Text(label) },
-                        leadingIcon = if (sharedLimitMinutes == minutes) {
+                        selected = sharedLimitMinutes == preset,
+                        onClick = { onSharedLimitChange(preset) },
+                        label = { Text(formatLimitTime(preset)) },
+                        leadingIcon = if (sharedLimitMinutes == preset) {
                             {
                                 Icon(
                                     Icons.Default.Check,
@@ -1075,37 +1145,14 @@ private fun IndividualLimitsStep(
     if (limitDialogForPackage != null) {
         val appName =
             allApps.find { it.first == limitDialogForPackage }?.second ?: limitDialogForPackage
-        AlertDialog(
-            onDismissRequest = onDismissLimitDialog,
-            title = { Text(stringResource(R.string.set_limit_for, appName)) },
-            text = {
-                Column {
-                    listOf(
-                        pluralStringResource(R.plurals.minutes_label, 5, 5) to 5,
-                        pluralStringResource(R.plurals.minutes_label, 15, 15) to 15,
-                        pluralStringResource(R.plurals.minutes_label, 30, 30) to 30,
-                        pluralStringResource(R.plurals.hours_label, 1, 1) to 60,
-                        pluralStringResource(R.plurals.hours_label, 2, 2) to 120,
-                        pluralStringResource(R.plurals.hours_label, 3, 3) to 180
-                    ).forEach { (label, minutes) ->
-                        TextButton(
-                            onClick = {
-                                onLimitChange(limitDialogForPackage, minutes)
-                                onDismissLimitDialog()
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(label)
-                        }
-                    }
-                }
+        LimitPickerDialog(
+            appName = appName,
+            initialMinutes = individualLimits[limitDialogForPackage] ?: 30,
+            onConfirm = { minutes ->
+                onLimitChange(limitDialogForPackage, minutes)
+                onDismissLimitDialog()
             },
-            confirmButton = {},
-            dismissButton = {
-                TextButton(onClick = onDismissLimitDialog) {
-                    Text(stringResource(R.string.cancel))
-                }
-            }
+            onDismiss = onDismissLimitDialog
         )
     }
 }
@@ -1252,39 +1299,122 @@ private fun AppSelectorDialog(
 
     if (selectedApp != null) {
         val (packageName, appName) = selectedApp!!
-        AlertDialog(
-            onDismissRequest = { selectedApp = null },
-            title = { Text(stringResource(R.string.set_limit_for, appName)) },
-            text = {
-                Column {
-                    listOf(
-                        pluralStringResource(R.plurals.minutes_label, 0, 0) to 0,
-                        pluralStringResource(R.plurals.minutes_label, 5, 5) to 5,
-                        pluralStringResource(R.plurals.minutes_label, 15, 15) to 15,
-                        pluralStringResource(R.plurals.minutes_label, 30, 30) to 30,
-                        pluralStringResource(R.plurals.hours_label, 1, 1) to 60,
-                        pluralStringResource(R.plurals.hours_label, 2, 2) to 120,
-                        pluralStringResource(R.plurals.hours_label, 3, 3) to 180
-                    ).forEach { (label, minutes) ->
-                        TextButton(
-                            onClick = {
-                                onAppSelected(packageName, appName, minutes)
-                                selectedApp = null
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(label)
-                        }
-                    }
-                }
+        LimitPickerDialog(
+            appName = appName,
+            onConfirm = { minutes ->
+                onAppSelected(packageName, appName, minutes)
+                selectedApp = null
             },
-            confirmButton = {},
-            dismissButton = {
-                TextButton(onClick = { selectedApp = null }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            }
+            onDismiss = { selectedApp = null }
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LimitPickerDialog(
+    appName: String,
+    initialMinutes: Int = 15,
+    onConfirm: (Int) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val presets = listOf(5, 10, 15, 20, 30, 45, 60, 90, 120)
+    var minutes by remember { mutableIntStateOf(initialMinutes) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 24.dp, end = 24.dp, bottom = 32.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.set_limit_for, appName),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+
+            // Big value display
+            Text(
+                text = if (minutes == 0) stringResource(R.string.block_entirely)
+                else formatLimitTime(minutes),
+                style = MaterialTheme.typography.displaySmall,
+                color = if (minutes == 0) MaterialTheme.colorScheme.error
+                else MaterialTheme.colorScheme.primary,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+
+            // Stepper row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                FilledTonalButton(
+                    onClick = {
+                        if (minutes >= 15) minutes -= 15 else if (minutes > 0) minutes = 0
+                    },
+                    enabled = minutes > 0,
+                    shape = RoundedCornerShape(12.dp)
+                ) { Text("−15m") }
+
+                FilledTonalButton(
+                    onClick = { if (minutes >= 5) minutes -= 5 else if (minutes > 0) minutes = 0 },
+                    enabled = minutes > 0,
+                    shape = RoundedCornerShape(12.dp)
+                ) { Text("−5m") }
+
+                FilledTonalButton(
+                    onClick = { minutes += 5 },
+                    shape = RoundedCornerShape(12.dp)
+                ) { Text("+5m") }
+
+                FilledTonalButton(
+                    onClick = { minutes += 15 },
+                    shape = RoundedCornerShape(12.dp)
+                ) { Text("+15m") }
+            }
+
+            HorizontalDivider()
+
+            // Preset chips
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                presets.forEach { preset ->
+                    FilterChip(
+                        selected = minutes == preset,
+                        onClick = { minutes = preset },
+                        label = { Text(formatLimitTime(preset)) }
+                    )
+                }
+                FilterChip(
+                    selected = minutes == 0,
+                    onClick = { minutes = 0 },
+                    label = { Text(stringResource(R.string.block_entirely)) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.errorContainer,
+                        selectedLabelColor = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                )
+            }
+
+            Button(
+                onClick = { onConfirm(minutes) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp)
+            ) {
+                Text(stringResource(R.string.save_routine))
+            }
+        }
     }
 }
 
@@ -1323,6 +1453,15 @@ private fun formatLimitTime(minutes: Int, context: android.content.Context): Str
         minutes < 60 -> context.getString(R.string.minutes_short_format, minutes)
         minutes % 60 == 0 -> context.getString(R.string.hours_short_format, minutes / 60)
         else -> context.getString(R.string.hour_min_short_suffix, minutes / 60, minutes % 60)
+    }
+}
+
+private fun formatLimitTime(minutes: Int): String {
+    return when {
+        minutes == 0 -> "0m"
+        minutes < 60 -> "${minutes}m"
+        minutes % 60 == 0 -> "${minutes / 60}h"
+        else -> "${minutes / 60}h ${minutes % 60}m"
     }
 }
 

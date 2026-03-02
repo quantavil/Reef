@@ -64,6 +64,9 @@
     <string name="add_app">Add App</string>
     <string name="no_app_limits_desc">No app limits added yet\nTap \'Add App\' to set limits for specific apps</string>
     <string name="save_routine">Save Routine</string>
+    <string name="block_entirely">Block entirely</string>
+    <string name="limit_per_session">Limit: %1$s per session</string>
+    <string name="app_will_be_fully_blocked">App will be fully blocked during routine</string>
     <string name="delete_routine">Delete Routine</string>
     <string name="routine_card_title">Automate Your Digital Wellness</string>
     <string name="routine_card_desc">Create smart routines to automatically manage app limits at specific times and days</string>
@@ -357,6 +360,9 @@
     <string name="start_focus_session">Start a focus session</string>
     <string name="paused_focus_session">Paused • %1$s</string>
     <string name="in_progress_focus_session">In progress • %1$s</string>
+
+    <string name="no_active_routines">Monitoring routines</string>
+    <string name="active_routines_list">Active: %1$s</string>
 
     <!-- Bottom Navigation -->
     <string name="nav_home">Home</string>

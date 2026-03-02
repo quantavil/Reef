@@ -2,38 +2,18 @@ package dev.pranav.reef.accessibility
 
 import android.accessibilityservice.AccessibilityService
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.edit
 import dev.pranav.reef.R
-import dev.pranav.reef.routine.Routines
 import dev.pranav.reef.scheduleWatcher
 import dev.pranav.reef.util.*
 import dev.pranav.reef.util.NotificationHelper.createNotificationChannel
 
 @SuppressLint("AccessibilityPolicy")
 class BlockerService: AccessibilityService() {
-
-    private val routineChangeReceiver = object: BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == Routines.ACTION_CHANGED) {
-                val sessionsJson = intent.getStringExtra("sessions") ?: "[]"
-                Log.d("BlockerService", "Routine state changed - received sessions: $sessionsJson")
-
-                prefs.edit { putString("active_routine_sessions", sessionsJson) }
-
-                Log.d("BlockerService", "Updated active sessions in SharedPreferences")
-            }
-        }
-    }
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -43,12 +23,6 @@ class BlockerService: AccessibilityService() {
             val deviceContext = createDeviceProtectedStorageContext()
             prefs = deviceContext.getSharedPreferences("prefs", MODE_PRIVATE)
         }
-
-        ContextCompat.registerReceiver(
-            this, routineChangeReceiver,
-            IntentFilter(Routines.ACTION_CHANGED),
-            ContextCompat.RECEIVER_NOT_EXPORTED
-        )
 
         scheduleWatcher(this)
     }
@@ -150,10 +124,5 @@ class BlockerService: AccessibilityService() {
 
     override fun onDestroy() {
         super.onDestroy()
-        try {
-            unregisterReceiver(routineChangeReceiver)
-        } catch (e: Exception) {
-            Log.e("BlockerService", "Error unregistering receiver", e)
-        }
     }
 }

@@ -2,7 +2,7 @@ package dev.pranav.reef.accessibility
 
 import android.app.usage.UsageStatsManager
 import android.content.Context
-import dev.pranav.reef.routine.Routines
+import dev.pranav.reef.services.routines.RoutineSessionManager
 import dev.pranav.reef.util.*
 import java.util.Calendar
 
@@ -21,15 +21,14 @@ object UsageTracker {
     }
 
     fun checkBlockReason(context: Context, packageName: String): BlockReason {
-        if (Whitelist.isWhitelisted(packageName)) return BlockReason.NONE
         if (shouldSkipPackage(context, packageName)) return BlockReason.NONE
 
         val usm = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
         val limitWarningsEnabled = prefs.getBoolean("limit_warnings", true)
 
-        // Check routine limits
-        Routines.getLimitMs(packageName)?.let { limitMs ->
-            val usageMs = Routines.getUsageMs(context, packageName)
+        // Routine limits are always enforced — whitelist does not bypass them
+        RoutineSessionManager.getLimitMs(packageName)?.let { limitMs ->
+            val usageMs = RoutineSessionManager.getUsageMs(context, packageName)
 
             android.util.Log.d(
                 "UsageTracker",
@@ -46,6 +45,9 @@ object UsageTracker {
                 return BlockReason.ROUTINE_LIMIT
             }
         }
+
+        // Whitelist bypasses daily limits only
+        if (Whitelist.isWhitelisted(packageName)) return BlockReason.NONE
 
         // Check daily limits
         if (AppLimits.hasLimit(packageName)) {

@@ -12,6 +12,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import dev.pranav.reef.R
 import dev.pranav.reef.accessibility.FocusModeService
+import dev.pranav.reef.accessibility.RoutinesService
 
 class ReefWorker(context: Context, params: WorkerParameters): Worker(context, params) {
 
@@ -36,6 +37,8 @@ class ReefWorker(context: Context, params: WorkerParameters): Worker(context, pa
             val intent = Intent(safeContext, FocusModeService::class.java)
             safeContext.startForegroundService(intent)
         }
+
+        RoutinesService.start(safeContext)
 
         return Result.success()
     }

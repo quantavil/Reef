@@ -84,6 +84,16 @@
                 android:value="Required for starting timer for focus mode" />
         </service>
 
+        <service
+            android:name=".accessibility.RoutinesService"
+            android:directBootAware="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Required for monitoring and enforcing routine schedules" />
+        </service>
+
         <receiver
             android:name=".receivers.BootReceiver"
             android:directBootAware="true"

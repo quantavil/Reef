@@ -7,7 +7,7 @@ import android.util.Log
 import androidx.core.content.edit
 import dev.pranav.reef.accessibility.BlockerService
 import dev.pranav.reef.accessibility.FocusModeService
-import dev.pranav.reef.routine.RoutineScheduler
+import dev.pranav.reef.accessibility.RoutinesService
 import dev.pranav.reef.util.isAccessibilityServiceEnabledForBlocker
 import dev.pranav.reef.util.isPrefsInitialized
 import dev.pranav.reef.util.prefs
@@ -30,7 +30,7 @@ class BootReceiver: BroadcastReceiver() {
             Intent.ACTION_USER_PRESENT -> {
                 refreshServices(safeContext)
 
-                RoutineScheduler.scheduleAllRoutines(safeContext)
+                RoutinesService.start(safeContext)
 
                 if (prefs.getBoolean("daily_summary", false)) {
                     DailySummaryScheduler.scheduleDailySummary(safeContext)

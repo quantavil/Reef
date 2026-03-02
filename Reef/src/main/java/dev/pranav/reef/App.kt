@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.work.*
 import com.google.android.material.color.DynamicColors
 import dev.pranav.reef.accessibility.BlockerService
+import dev.pranav.reef.accessibility.RoutinesService
 import dev.pranav.reef.receivers.DailySummaryScheduler
 import dev.pranav.reef.util.*
 import java.util.concurrent.TimeUnit
@@ -32,6 +33,8 @@ class App: Application(), Configuration.Provider {
         FocusStats.init(this)
 
         scheduleWatcher(this)
+
+        RoutinesService.start(this)
 
         if (prefs.getBoolean("daily_summary", false)) {
             DailySummaryScheduler.scheduleDailySummary(this)

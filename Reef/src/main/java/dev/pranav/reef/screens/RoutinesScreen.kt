@@ -13,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -24,7 +23,6 @@ import dev.pranav.reef.R
 import dev.pranav.reef.data.Routine
 import dev.pranav.reef.data.RoutineSchedule
 import dev.pranav.reef.routine.Routines
-import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -38,9 +36,7 @@ fun RoutinesScreen(
     onEditRoutine: (Routine) -> Unit
 ) {
     val context = LocalContext.current
-    val resources = LocalResources.current
     var routines by remember { mutableStateOf(Routines.getAll()) }
-    var showActivateDialog by remember { mutableStateOf<Routine?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
 
@@ -79,11 +75,7 @@ fun RoutinesScreen(
                     RoutineItem(
                         routine = routine,
                         onClick = {
-                            if (routine.schedule.type == RoutineSchedule.ScheduleType.MANUAL) {
-                                showActivateDialog = routine
-                            } else {
-                                onEditRoutine(routine)
-                            }
+                            onEditRoutine(routine)
                         },
                         onToggle = { _ ->
                             Routines.toggle(routine.id, context)
@@ -107,50 +99,6 @@ fun RoutinesScreen(
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter)
-        )
-    }
-
-    showActivateDialog?.let { routine ->
-        AlertDialog(
-            onDismissRequest = { showActivateDialog = null },
-            title = { Text(stringResource(R.string.activate_routine)) },
-            text = { Text(stringResource(R.string.activate_routine_confirmation, routine.name)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        Routines.startSession(context, routine)
-                        showActivateDialog = null
-
-                        kotlinx.coroutines.MainScope().launch {
-                            snackbarHostState.showSnackbar(
-                                resources.getString(
-                                    R.string.routine_activated_toast,
-                                    routine.name,
-                                    ""
-                                ),
-                                duration = SnackbarDuration.Long
-                            )
-                        }
-                    }
-                ) {
-                    Text(stringResource(R.string.activate))
-                }
-            },
-            dismissButton = {
-                Row {
-                    TextButton(onClick = { showActivateDialog = null }) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                    TextButton(
-                        onClick = {
-                            showActivateDialog = null
-                            onEditRoutine(routine)
-                        }
-                    ) {
-                        Text(stringResource(R.string.edit))
-                    }
-                }
-            }
         )
     }
 }
