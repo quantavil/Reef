@@ -75,16 +75,20 @@ fun AppUsageScreen(
 
     Crossfade(targetState = isLoading, label = "loading") { loading ->
         if (loading) {
-            Column(
-                Modifier
-                    .fillMaxWidth()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
                     .padding(top = contentPadding.calculateTopPadding()),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                contentAlignment = Alignment.Center
             ) {
-                ContainedLoadingIndicator()
-                Spacer(Modifier.height(12.dp))
-                Text(stringResource(R.string.fetching_usage_data))
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    ContainedLoadingIndicator()
+                    Spacer(Modifier.height(12.dp))
+                    Text(
+                        text = stringResource(R.string.fetching_usage_data),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
         } else {
             LazyColumn(

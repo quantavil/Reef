@@ -381,6 +381,7 @@ class MainActivity: ComponentActivity() {
 
                         composable<Screen.Routines> {
                             RoutinesScreen(
+                                onBackPress = { navController.popBackStack() },
                                 onCreateRoutine = { navController.navigate(Screen.CreateRoutine(null)) },
                                 onEditRoutine = { routine ->
                                     navController.navigate(
@@ -403,6 +404,7 @@ class MainActivity: ComponentActivity() {
 
                         composable<Screen.Whitelist> {
                             WhitelistScreenWrapper(
+                                navController = navController,
                                 launcherApps = launcherApps,
                                 packageManager = packageManager,
                                 currentPackageName = packageName

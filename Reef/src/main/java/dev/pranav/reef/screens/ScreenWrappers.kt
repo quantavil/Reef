@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.pm.LauncherApps
 import android.content.pm.PackageManager
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import dev.pranav.reef.R
 import dev.pranav.reef.ui.appusage.AppUsageScreen
 import dev.pranav.reef.ui.appusage.AppUsageStats
@@ -75,6 +74,7 @@ fun UsageScreenWrapper(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WhitelistScreenWrapper(
+    navController: NavController,
     launcherApps: LauncherApps,
     packageManager: PackageManager,
     currentPackageName: String
@@ -87,28 +87,11 @@ fun WhitelistScreenWrapper(
         }
     )
 
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        contentWindowInsets = WindowInsets(0),
-        topBar = {
-            LargeTopAppBar(
-                title = { Text(stringResource(R.string.whitelist_apps_title)) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
-                scrollBehavior = scrollBehavior
-            )
-        }
-    ) { paddingValues ->
-        WhitelistScreen(
-            uiState = viewModel.uiState.value,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            onToggle = viewModel::toggleWhitelist,
-            searchQuery = viewModel.searchQuery.value,
-            onSearchQueryChange = viewModel::onSearchQueryChange
-        )
-    }
+    WhitelistScreen(
+        onBackPress = { navController.popBackStack() },
+        uiState = viewModel.uiState.value,
+        onToggle = viewModel::toggleWhitelist,
+        searchQuery = viewModel.searchQuery.value,
+        onSearchQueryChange = viewModel::onSearchQueryChange
+    )
 }

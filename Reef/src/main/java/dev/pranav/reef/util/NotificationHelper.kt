@@ -105,6 +105,7 @@ object NotificationHelper {
         }
 
         val notification = NotificationCompat.Builder(context, ROUTINE_STATUS_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(context.getString(R.string.routines))
             .setContentText(contentText)
             .setOngoing(true)
@@ -142,7 +143,7 @@ object NotificationHelper {
                     minutes
                 )
             )
-            .setSmallIcon(R.drawable.round_hourglass_disabled_24)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)

@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -24,8 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.createBitmap
+import dev.pranav.reef.R
 
 @Stable
 data class WhitelistedApp(
@@ -43,37 +47,82 @@ sealed interface AllowedAppsState {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun WhitelistScreen(
+    onBackPress: () -> Unit,
     uiState: AllowedAppsState,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onToggle: (WhitelistedApp) -> Unit,
-    modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = onSearchQueryChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            placeholder = { Text("Search apps...") },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-            trailingIcon = {
-                if (searchQuery.isNotEmpty()) {
-                    IconButton(onClick = { onSearchQueryChange("") }) {
-                        Icon(Icons.Default.Close, contentDescription = "Clear search")
-                    }
-                }
-            },
-            shape = RoundedCornerShape(28.dp),
-            singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors()
-        )
+    val scrollBehavior =
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
-        Box(modifier = Modifier.fillMaxSize()) {
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        contentWindowInsets = WindowInsets(0),
+        topBar = {
+            LargeTopAppBar(
+                title = {
+                    Column(
+                        modifier = Modifier.padding(bottom = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Text(stringResource(R.string.whitelist_apps_title))
+
+                        OutlinedTextField(
+                            value = searchQuery,
+                            onValueChange = onSearchQueryChange,
+                            modifier = Modifier.fillMaxWidth(),
+                            placeholder = {
+                                Text(
+                                    "Search apps...",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            },
+                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                            trailingIcon = {
+                                if (searchQuery.isNotEmpty()) {
+                                    IconButton(onClick = { onSearchQueryChange("") }) {
+                                        Icon(
+                                            Icons.Default.Close,
+                                            contentDescription = "Clear search"
+                                        )
+                                    }
+                                }
+                            },
+                            shape = RoundedCornerShape(28.dp),
+                            singleLine = true,
+                            textStyle = MaterialTheme.typography.bodyLarge,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                            )
+                        )
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = { onBackPress() }) {
+                        Icon(
+                            Icons.AutoMirrored.Rounded.ArrowBack,
+                            contentDescription = stringResource(R.string.back)
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surface
+                ),
+                scrollBehavior = scrollBehavior
+            )
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
             when (uiState) {
                 is AllowedAppsState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    ContainedLoadingIndicator(modifier = Modifier.align(Alignment.Center))
                 }
 
                 is AllowedAppsState.Success -> {
@@ -86,11 +135,7 @@ fun WhitelistScreen(
                     } else {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(
-                                bottom = 16.dp,
-                                start = 16.dp,
-                                end = 16.dp
-                            )
+                            contentPadding = PaddingValues(16.dp)
                         ) {
                             itemsIndexed(
                                 items = uiState.apps,

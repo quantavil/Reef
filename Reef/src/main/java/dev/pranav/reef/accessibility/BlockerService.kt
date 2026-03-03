@@ -97,7 +97,7 @@ class BlockerService: AccessibilityService() {
         }
 
         val notification = NotificationCompat.Builder(this, BLOCKER_CHANNEL_ID)
-            .setSmallIcon(R.drawable.round_hourglass_disabled_24)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(getString(R.string.app_blocked))
             .setContentText(contentText)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -106,7 +106,7 @@ class BlockerService: AccessibilityService() {
             .build()
 
         val summary = NotificationCompat.Builder(this, BLOCKER_CHANNEL_ID)
-            .setSmallIcon(R.drawable.round_hourglass_disabled_24)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setGroup(BLOCKER_GROUP_KEY)
             .setGroupSummary(true)
             .build()
@@ -129,7 +129,7 @@ class BlockerService: AccessibilityService() {
         }
 
         val notification = NotificationCompat.Builder(this, BLOCKER_CHANNEL_ID)
-            .setSmallIcon(R.drawable.round_hourglass_disabled_24)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(getString(R.string.distraction_blocked))
             .setContentText(getString(R.string.you_were_using, appName))
             .setPriority(NotificationCompat.PRIORITY_HIGH)

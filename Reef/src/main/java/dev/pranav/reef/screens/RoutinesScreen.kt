@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.*
@@ -33,6 +34,7 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoutinesScreen(
+    onBackPress: () -> Unit,
     onCreateRoutine: () -> Unit,
     onEditRoutine: (Routine) -> Unit
 ) {
@@ -67,7 +69,15 @@ fun RoutinesScreen(
             LargeTopAppBar(
                 title = { Text(stringResource(R.string.routines)) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                navigationIcon = {
+                    IconButton(onClick = { onBackPress() }) {
+                        Icon(
+                            Icons.AutoMirrored.Rounded.ArrowBack,
+                            contentDescription = stringResource(R.string.back)
+                        )
+                    }
+                }
             )
         },
         floatingActionButton = {
