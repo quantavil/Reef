@@ -18,12 +18,7 @@ fun SettingsContent(
 ) {
     var currentScreen by remember { mutableStateOf<SettingsScreenRoute>(SettingsScreenRoute.Main) }
     val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-
-    LaunchedEffect(currentScreen) {
-        scrollBehavior.state.heightOffset = 0f
-        scrollBehavior.state.contentOffset = 0f
-    }
+        TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -34,7 +29,7 @@ fun SettingsContent(
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                LargeTopAppBar(
+                TopAppBar(
                     title = { Text(stringResource(R.string.settings)) },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
                     scrollBehavior = scrollBehavior

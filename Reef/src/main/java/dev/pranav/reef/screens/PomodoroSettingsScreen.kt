@@ -118,11 +118,11 @@ fun PomodoroSettingsContent(
         )
     )
 
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     Scaffold(
         topBar = {
-            LargeTopAppBar(
+            TopAppBar(
                 title = { Text(stringResource(R.string.pomodoro_settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBackPressed) {

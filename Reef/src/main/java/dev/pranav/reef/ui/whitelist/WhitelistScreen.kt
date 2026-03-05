@@ -54,65 +54,64 @@ fun WhitelistScreen(
     onToggle: (WhitelistedApp) -> Unit,
 ) {
     val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+        TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         contentWindowInsets = WindowInsets(0),
         topBar = {
-            LargeTopAppBar(
-                title = {
-                    Column(
-                        modifier = Modifier.padding(bottom = 12.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
+            Column {
+                TopAppBar(
+                    title = {
                         Text(stringResource(R.string.whitelist_apps_title))
-
-                        OutlinedTextField(
-                            value = searchQuery,
-                            onValueChange = onSearchQueryChange,
-                            modifier = Modifier.fillMaxWidth(),
-                            placeholder = {
-                                Text(
-                                    "Search apps...",
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                            },
-                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                            trailingIcon = {
-                                if (searchQuery.isNotEmpty()) {
-                                    IconButton(onClick = { onSearchQueryChange("") }) {
-                                        Icon(
-                                            Icons.Default.Close,
-                                            contentDescription = "Clear search"
-                                        )
-                                    }
-                                }
-                            },
-                            shape = RoundedCornerShape(28.dp),
-                            singleLine = true,
-                            textStyle = MaterialTheme.typography.bodyLarge,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { onBackPress() }) {
+                            Icon(
+                                Icons.AutoMirrored.Rounded.ArrowBack,
+                                contentDescription = stringResource(R.string.back)
                             )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        scrolledContainerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    scrollBehavior = scrollBehavior
+                )
+
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = onSearchQueryChange,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    placeholder = {
+                        Text(
+                            "Search apps...",
+                            style = MaterialTheme.typography.bodyLarge
                         )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = { onBackPress() }) {
-                        Icon(
-                            Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.back)
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surface
-                ),
-                scrollBehavior = scrollBehavior
-            )
+                    },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { onSearchQueryChange("") }) {
+                                Icon(
+                                    Icons.Default.Close,
+                                    contentDescription = "Clear search"
+                                )
+                            }
+                        }
+                    },
+                    shape = RoundedCornerShape(28.dp),
+                    singleLine = true,
+                    textStyle = MaterialTheme.typography.bodyLarge,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                    )
+                )
+            }
         }
     ) { paddingValues ->
         Box(

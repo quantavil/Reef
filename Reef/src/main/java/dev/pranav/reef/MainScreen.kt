@@ -60,7 +60,7 @@ fun HomeContent(
     var showDiscordDialog by remember { mutableStateOf(false) }
     var showDonateDialog by remember { mutableStateOf(false) }
 
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(
         rememberTopAppBarState()
     )
 
@@ -81,7 +81,7 @@ fun HomeContent(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         contentWindowInsets = WindowInsets(0),
         topBar = {
-            MediumTopAppBar(
+            TopAppBar(
                 title = {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -120,12 +120,11 @@ fun HomeContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
                 .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Spacer(Modifier.height(8.dp))
 
             FocusModeCard(

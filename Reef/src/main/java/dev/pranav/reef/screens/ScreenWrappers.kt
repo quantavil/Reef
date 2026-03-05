@@ -49,13 +49,13 @@ fun UsageScreenWrapper(
     )
 
     val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+        TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         contentWindowInsets = WindowInsets(0),
         topBar = {
-            LargeTopAppBar(
+            TopAppBar(
                 title = { Text(stringResource(R.string.app_usage)) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
                 scrollBehavior = scrollBehavior

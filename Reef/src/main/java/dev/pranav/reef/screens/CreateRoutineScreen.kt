@@ -54,7 +54,7 @@ fun CreateRoutineScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val snackbarHostState = remember { SnackbarHostState() }
 
     var currentRoutine by remember { mutableStateOf<Routine?>(null) }
@@ -92,7 +92,7 @@ fun CreateRoutineScreen(
         contentWindowInsets = WindowInsets(0),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            LargeTopAppBar(
+            TopAppBar(
                 title = {
                     Text(
                         if (currentRoutine != null) stringResource(R.string.edit_routine)

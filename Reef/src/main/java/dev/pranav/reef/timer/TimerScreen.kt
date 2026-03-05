@@ -1,6 +1,7 @@
 package dev.pranav.reef.timer
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -63,47 +64,39 @@ fun TimerContent(
     val showRunningView = isTimerRunning || isPaused
     var selectedMode by remember { mutableIntStateOf(0) }
 
-    val setupScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-    val runningScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-
-    val scrollBehavior = if (showRunningView) runningScrollBehavior else setupScrollBehavior
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         contentWindowInsets = WindowInsets(0),
         topBar = {
-
-            LargeTopAppBar(
-                title = {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                    ) {
-                        Text(
-                            stringResource(R.string.focus_mode_title)
-                        )
-
-                        if (!showRunningView) {
-                            FocusModeGroup(
-                                selectedMode = selectedMode,
-                                onSelectionChange = { selectedMode = it })
-
-                            Spacer(modifier = Modifier.height(8.dp))
+            Column(modifier = Modifier.animateContentSize()) {
+                TopAppBar(
+                    title = {
+                        Text(stringResource(R.string.focus_mode_title))
+                    },
+                    actions = {
+                        IconButton(onClick = { navController.navigate(Screen.FocusStats) }) {
+                            Icon(
+                                Icons.Outlined.BarChart,
+                                contentDescription = "Focus Stats"
+                            )
                         }
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { navController.navigate(Screen.FocusStats) }) {
-                        Icon(
-                            Icons.Outlined.BarChart,
-                            contentDescription = "Focus Stats"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                ),
-                scrollBehavior = scrollBehavior
-            )
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent
+                    ),
+                    scrollBehavior = scrollBehavior
+                )
+
+                if (!showRunningView) {
+                    FocusModeGroup(
+                        selectedMode = selectedMode,
+                        onSelectionChange = { selectedMode = it }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
         }
     ) { paddingValues ->
         Box(
@@ -130,15 +123,13 @@ fun TimerContent(
                             .verticalScroll(rememberScrollState())
                             .padding(horizontal = 24.dp)
                     ) {
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                            Box(modifier = Modifier.fillMaxWidth()) {
-                                if (selectedMode == 0) {
-                                    SimpleFocusSetup(onStartTimer)
-                                } else {
-                                    PomodoroFocusSetup(onStartTimer)
-                                }
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            if (selectedMode == 0) {
+                                SimpleFocusSetup(onStartTimer)
+                            } else {
+                                PomodoroFocusSetup(onStartTimer)
                             }
                         }
                     }
