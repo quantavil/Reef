@@ -64,7 +64,7 @@ fun TimerContent(
     val showRunningView = isTimerRunning || isPaused
     var selectedMode by remember { mutableIntStateOf(0) }
 
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

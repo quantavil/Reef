@@ -129,7 +129,7 @@ fun FocusStatsScreen(
         }"
     }
 
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState()
     )
 

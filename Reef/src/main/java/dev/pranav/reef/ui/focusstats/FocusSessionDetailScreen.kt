@@ -61,7 +61,7 @@ fun FocusSessionDetailScreen(sessionId: String, onBackPressed: () -> Unit) {
         return
     }
 
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(
         contentWindowInsets = WindowInsets(0),

@@ -54,7 +54,7 @@ fun CreateRoutineScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val snackbarHostState = remember { SnackbarHostState() }
 
     var currentRoutine by remember { mutableStateOf<Routine?>(null) }

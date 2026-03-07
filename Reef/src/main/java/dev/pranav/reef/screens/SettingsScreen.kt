@@ -18,7 +18,7 @@ fun SettingsContent(
 ) {
     var currentScreen by remember { mutableStateOf<SettingsScreenRoute>(SettingsScreenRoute.Main) }
     val scrollBehavior =
-        TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

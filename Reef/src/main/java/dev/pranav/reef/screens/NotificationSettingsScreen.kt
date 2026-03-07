@@ -36,7 +36,7 @@ fun NotificationSettingsContent(
     var dailySummary by remember { mutableStateOf(prefs.getBoolean("daily_summary", false)) }
     var limitWarnings by remember { mutableStateOf(prefs.getBoolean("limit_warnings", true)) }
 
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(
         topBar = {

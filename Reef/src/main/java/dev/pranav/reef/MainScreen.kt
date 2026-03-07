@@ -60,7 +60,7 @@ fun HomeContent(
     var showDiscordDialog by remember { mutableStateOf(false) }
     var showDonateDialog by remember { mutableStateOf(false) }
 
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState()
     )
 
