@@ -40,7 +40,7 @@ fun NotificationSettingsContent(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            MediumTopAppBar(
                 title = { Text(stringResource(R.string.notifications_settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBackPressed) {

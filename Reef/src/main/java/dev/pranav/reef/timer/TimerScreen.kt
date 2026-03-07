@@ -71,7 +71,7 @@ fun TimerContent(
         contentWindowInsets = WindowInsets(0),
         topBar = {
             Column(modifier = Modifier.animateContentSize()) {
-                TopAppBar(
+                MediumTopAppBar(
                     title = {
                         Text(stringResource(R.string.focus_mode_title))
                     },

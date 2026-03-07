@@ -29,7 +29,7 @@ fun SettingsContent(
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                TopAppBar(
+                MediumTopAppBar(
                     title = { Text(stringResource(R.string.settings)) },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
                     scrollBehavior = scrollBehavior

@@ -55,7 +55,7 @@ fun DailyLimitScreen(
         contentWindowInsets = WindowInsets(0),
         containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
-            TopAppBar(
+            MediumTopAppBar(
                 title = { Text(stringResource(R.string.daily_usage_limit)) },
                 navigationIcon = {
                     IconButton(onClick = onBackPressed) {

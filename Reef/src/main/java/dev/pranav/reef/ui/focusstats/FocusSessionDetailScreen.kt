@@ -66,7 +66,7 @@ fun FocusSessionDetailScreen(sessionId: String, onBackPressed: () -> Unit) {
     Scaffold(
         contentWindowInsets = WindowInsets(0),
         topBar = {
-            TopAppBar(
+            MediumTopAppBar(
                 title = {
                     Text(
                         "Session Detail",

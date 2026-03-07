@@ -61,7 +61,7 @@ fun WhitelistScreen(
         contentWindowInsets = WindowInsets(0),
         topBar = {
             Column {
-                TopAppBar(
+                MediumTopAppBar(
                     title = {
                         Text(stringResource(R.string.whitelist_apps_title))
                     },

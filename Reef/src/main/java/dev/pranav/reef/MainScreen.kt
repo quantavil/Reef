@@ -81,7 +81,7 @@ fun HomeContent(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         contentWindowInsets = WindowInsets(0),
         topBar = {
-            TopAppBar(
+            MediumTopAppBar(
                 title = {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)

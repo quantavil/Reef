@@ -77,7 +77,7 @@ fun PermissionsScreen(onBackClick: () -> Unit) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            MediumTopAppBar(
                 title = { Text(stringResource(R.string.required_permissions)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
